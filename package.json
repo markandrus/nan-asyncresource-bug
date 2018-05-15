@@ -1,0 +1,28 @@
+{
+  "name": "nan-asyncresource-bug",
+  "version": "0.1.0",
+  "description": "Nan AsyncResource Bug",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markandrus/nan-asyncresource-bug.git"
+  },
+  "keywords": [
+    "Nan",
+    "AsyncResource",
+    "Bug"
+  ],
+  "author": "Mark Andrus Roberts <markandrusroberts@gmail.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/markandrus/nan-asyncresource-bug/issues"
+  },
+  "homepage": "https://github.com/markandrus/nan-asyncresource-bug#readme",
+  "dependencies": {
+    "nan": "^2.10.0",
+    "node-gyp": "^3.6.2"
+  }
+}
