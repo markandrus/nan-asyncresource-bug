@@ -8,8 +8,7 @@
 namespace addon {
 
 class Bar
-  : public Nan::AsyncResource
-  , public Nan::ObjectWrap {
+  : public Nan::ObjectWrap {
  public:
    Bar();
 
@@ -24,11 +23,15 @@ class Bar
 
    void Run();
 
+ protected:
+   void Unref() override;
+
  private:
    static std::atomic<int> _last_id;
 
    int _id;
    uv_async_t _async;
+   Nan::AsyncResource* _async_resource = new Nan::AsyncResource("Bar");
    uv_loop_t* _loop;
    std::atomic<int> _foos_to_create = {0};
    std::atomic<bool> _should_stop = {false};
