@@ -6,8 +6,7 @@ Nan::Persistent<v8::Function> Foo::constructor;
 std::atomic<int> Foo::_last_id = {0};
 
 Foo::Foo()
-  : Nan::AsyncResource("Foo")
-  , _id(_last_id.fetch_add(1))
+  : _id(_last_id.fetch_add(1))
   , _loop(uv_default_loop())
 {
   uv_async_init(_loop, &_async, [](uv_async_t* handle) {
@@ -39,6 +38,13 @@ NAN_METHOD(Foo::Stop) {
 NAN_GETTER(Foo::Id) {
   auto self = Nan::ObjectWrap::Unwrap<Foo>(info.Holder());
   info.GetReturnValue().Set(Nan::New(self->_id));
+}
+
+void Foo::Unref() {
+  Nan::HandleScope scope;
+  delete _async_resource;
+  _async_resource = nullptr;
+  Nan::ObjectWrap::Unref();
 }
 
 void Foo::Init(v8::Handle<v8::Object> exports) {

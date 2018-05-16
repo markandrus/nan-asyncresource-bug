@@ -9,8 +9,7 @@ Nan::Persistent<v8::Function> Bar::constructor;
 std::atomic<int> Bar::_last_id = {0};
 
 Bar::Bar()
-  : Nan::AsyncResource("Bar")
-  , _id(_last_id.fetch_add(1))
+  : _id(_last_id.fetch_add(1))
   , _loop(uv_default_loop())
 {
   uv_async_init(_loop, &_async, [](uv_async_t* handle) {
@@ -31,7 +30,7 @@ void Bar::Run() {
   }
   while (_foos_to_create.fetch_sub(1)) {
     v8::Local<v8::Value> foo = Nan::NewInstance(Nan::New(Foo::constructor), 0, nullptr).ToLocalChecked();
-    runInAsyncScope(handle(), "onfoo", 1, &foo);
+    _async_resource->runInAsyncScope(handle(), "onfoo", 1, &foo);
   }
 }
 
@@ -57,6 +56,13 @@ NAN_METHOD(Bar::Stop) {
 NAN_GETTER(Bar::Id) {
   auto self = Nan::ObjectWrap::Unwrap<Bar>(info.Holder());
   info.GetReturnValue().Set(Nan::New(self->_id));
+}
+
+void Bar::Unref() {
+  Nan::HandleScope scope;
+  delete _async_resource;
+  _async_resource = nullptr;
+  Nan::ObjectWrap::Unref();
 }
 
 void Bar::Init(v8::Handle<v8::Object> exports) {
